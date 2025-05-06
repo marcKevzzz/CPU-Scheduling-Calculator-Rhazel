@@ -171,6 +171,35 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  const clearBtn = document.getElementById("clear");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      resetUI();
+
+      // Clear process table rows except header
+      const tableBody = document.querySelector("#processTable tbody");
+      if (tableBody) {
+        tableBody.innerHTML = "";
+      }
+
+      // Reset algorithm value and radio buttons
+      algorithmValue = "";
+      document.querySelectorAll("input[type='radio']").forEach((radio) => {
+        radio.checked = false;
+      });
+
+      // Hide or reset selectLbl
+      const selectLbl = document.getElementById("selectLbl");
+      if (selectLbl) {
+        selectLbl.textContent = "";
+        selectLbl.classList.add("hide");
+      }
+
+      // Remove Priority and Time Quantum columns
+      updateTableColumns(""); // force cleanup
+    });
+  }
+
   const deleteRowBtn = document.getElementById("deleteRow");
   if (deleteRowBtn) {
     deleteRowBtn.addEventListener("click", () => {
