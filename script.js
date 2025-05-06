@@ -10,12 +10,12 @@ import {
   onAlgorithmChange,
 } from "./algorithms/render.js";
 
-// import { calculateFCFS } from "./algorithms/fcfs.js";
-// import { calculateSJF } from "./algorithms/sjf.js";
-// import { calculateNPP } from "./algorithms/npp.js";
-// import { calculateRR } from "./algorithms/rr.js";
-// import { calculateSRTF } from "./algorithms/srtf.js";
-// import { calculatePP } from "./algorithms/pp.js";
+import { calculateFCFS } from "./algorithms/fcfs.js";
+import { calculateSJF } from "./algorithms/sjf.js";
+import { calculateNPP } from "./algorithms/npp.js";
+import { calculateRR } from "./algorithms/rr.js";
+import { calculateSRTF } from "./algorithms/srtf.js";
+import { calculatePP } from "./algorithms/pp.js";
 
 function scheduleAndRender(algorithm, options = {}, mode) {
   resetUI();
@@ -34,13 +34,13 @@ function scheduleAndRender(algorithm, options = {}, mode) {
     renderResultTableWaiting(result);
     renderGanttChart(options, ganttChart);
     generateTimeline(result);
-    renderCPUUtilization(totalIdle, totalTime, ganttChart);
+    renderCPUUtilization(totalIdle, result, ganttChart);
   } catch (error) {
     console.error("Error during scheduling or rendering:", error);
   }
 }
 
-let algorithmValue = "FCFS";
+let algorithmValue = "";
 const radioButtons = document.querySelectorAll("input[type='radio']");
 
 export function updateTableColumns(selectedValue) {
@@ -83,7 +83,7 @@ export function updateTableColumns(selectedValue) {
       const newCell = document.createElement("td");
       newCell.classList.add("priority-col");
       newCell.innerHTML = `  <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-1"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-1"
                   type="number"
                   min="0"
                 />`;
@@ -105,6 +105,8 @@ radioButtons.forEach((radio) => {
     updateTableColumns(radio.value);
     algorithmValue = radio.value;
     onAlgorithmChange(radio.value);
+    selectLbl.classList.remove("hide");
+    selectLbl.textContent = `${algorithmValue} SELECTED!`;
   });
 });
 
@@ -138,12 +140,17 @@ function validateTableInputs(algorithm, options = {}, mode) {
     firstInvalidInput.scrollIntoView({ behavior: "smooth", block: "center" });
     firstInvalidInput.focus();
 
-    const modal = new bootstrap.Toast(document.getElementById("liveToast"));
-    modal.show();
+    showToast("Invalid Input");
     return false;
   }
 
   // If valid, run your computation
+  const hide = document.querySelectorAll(".hide");
+  hide.forEach((h) => {
+    h.classList.remove("hide");
+  });
+  showToast(`Calculate Successful`, true);
+
   scheduleAndRender(algorithm, options, mode);
 }
 
@@ -170,68 +177,118 @@ document.addEventListener("DOMContentLoaded", function () {
       deleteRow("#processTable");
     });
   }
+  const selectLbl = document.getElementById("selectLbl");
+  const calculate = document.getElementById("calculate");
+  calculate.addEventListener("click", () => {
+    if (!algorithmValue) {
+      showToast("Select an algorithm");
+      return false;
+    }
+    console.log(algorithmValue);
+    switch (algorithmValue) {
+      case "FCFS":
+        validateTableInputs(calculateFCFS, {
+          showQueue: true,
+          algorithm: "FCFS",
+        });
 
-  // const calculate = document.getElementById("calculate");
-  // calculate.addEventListener("click", () => {
-  //   switch (algorithmValue) {
-  //     case "FCFS":
-  //       validateTableInputs(calculateFCFS, {
-  //         showQueue: true,
-  //         algorithm: "FCFS",
-  //       });
-  //       break;
+        break;
 
-  //     case "SJF":
-  //       validateTableInputs(calculateSJF, {
-  //         showQueue: true,
-  //         algorithm: "SJF",
-  //       });
-  //       break;
+      case "SJF":
+        validateTableInputs(calculateSJF, {
+          showQueue: true,
+          algorithm: "SJF",
+        });
+        break;
 
-  //     case "NPP":
-  //       validateTableInputs(
-  //         calculateNPP,
-  //         {
-  //           showQueue: true,
-  //           algorithm: "NPP",
-  //         },
-  //         "priority"
-  //       );
-  //       break;
+      case "NPP":
+        validateTableInputs(
+          calculateNPP,
+          {
+            showQueue: true,
+            algorithm: "NPP",
+          },
+          "priority"
+        );
+        break;
 
-  //     case "PP":
-  //       validateTableInputs(
-  //         calculatePP,
-  //         {
-  //           showQueue: true,
-  //           algorithm: "PP",
-  //         },
-  //         "priority"
-  //       );
-  //       break;
+      case "PP":
+        validateTableInputs(
+          calculatePP,
+          {
+            showQueue: true,
+            algorithm: "PP",
+          },
+          "priority"
+        );
+        break;
 
-  //     case "SRTF":
-  //       validateTableInputs(calculateSRTF, {
-  //         showQueue: true,
-  //         algorithm: "SRTF",
-  //       });
-  //       break;
+      case "SRTF":
+        validateTableInputs(calculateSRTF, {
+          showQueue: true,
+          algorithm: "SRTF",
+        });
+        break;
 
-  //     case "RR":
-  //       validateTableInputs(
-  //         calculateRR,
-  //         {
-  //           showQueue: true,
-  //           algorithm: "RR",
-  //         },
-  //         "roundrobin"
-  //       );
+      case "RR":
+        validateTableInputs(
+          calculateRR,
+          {
+            showQueue: true,
+            algorithm: "RR",
+          },
+          "roundrobin"
+        );
 
-  //       // validateTableInputs(calculateSRTF, {
-  //       //   showQueue: true,
-  //       //   algorithm: "SRTF",
-  //       // });
-  //       break;
-  //   }
-  // });
+        // validateTableInputs(calculateSRTF, {
+        //   showQueue: true,
+        //   algorithm: "SRTF",
+        // });
+        break;
+      default:
+        selectLbl.classList.add("hidden");
+        break;
+    }
+  });
+  document.getElementById("hideToast").addEventListener("click", (b) => {
+    hideToast();
+  });
 });
+
+let toastTimeout;
+
+function showToast(message, bool = false) {
+  const toastLbl = document.getElementById("toastLbl");
+  const toast = document.getElementById("toast-danger");
+  if (bool) {
+    const yes = document.getElementById("success");
+    yes.classList.remove("hide");
+    document.getElementById("no").classList.add("hide");
+  } else {
+    const no = document.getElementById("no");
+    no.classList.remove("hide");
+    document.getElementById("success").classList.add("hide");
+  }
+
+  // Set message
+  toastLbl.textContent = message;
+
+  // Show toast
+  toast.classList.remove("hidden", "opacity-0");
+  toast.classList.add("opacity-100");
+
+  // Auto hide after 3s
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    hideToast();
+  }, 3000);
+}
+
+function hideToast() {
+  const toast = document.getElementById("toast-danger");
+  toast.classList.add("opacity-0");
+
+  setTimeout(() => {
+    toast.classList.add("hidden");
+  }, 100); // Match duration-300
+}

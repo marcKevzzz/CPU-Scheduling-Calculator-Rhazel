@@ -2,14 +2,16 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <title>FCFS Algorithm Page</title>
+    <title>CPU Algorithm Solver</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
       rel="stylesheet"
     />
+
     <style>
+      @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css");
       @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
       body {
@@ -18,29 +20,114 @@
     </style>
   </head>
 
-  <body class="bg-yellow-300 sm:px-[3rem] px-3 flex flex-row flex-wrap py-5">
-    <div class="w-full lg:flex flex-row gap-6">
+  <body
+    class="bg-yellow-300 sm:px-[3rem] px-3 flex flex-row flex-wrap pb-5 relative"
+  >
+    <div
+      id="toast-danger"
+      class="hidden flex items-center w-full max-w-xs px-2 p-1 mb-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800 fixed sm:top-[4rem] top-[2rem] right-[1rem] z-50 transition-opacity duration-300 opacity-0"
+      role="alert"
+    >
+      <div
+        class="inline-flex items-center justify-center shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200"
+        id="no"
+      >
+        <svg
+          class="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM10 15a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-4a1 1 0 0 1-2 0V6a1 1 0 0 1 2 0v5Z"
+          />
+        </svg>
+        <span class="sr-only">Warning icon</span>
+      </div>
+      <div
+        class="hide inline-flex items-center justify-center shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200"
+        id="success"
+      >
+        <svg
+          class="w-5 h-5"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"
+          />
+        </svg>
+        <span class="sr-only">Check icon</span>
+      </div>
+      <div class="ms-3 text-[10px] font-normal" id="toastLbl"></div>
+      <button
+        id="hideToast"
+        class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+        aria-label="Close"
+      >
+        <svg
+          class="w-3 h-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 14"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      class="fixed left-[0] top-[0] bg-black w-[100vw] font-mono text-white sm:text-[1.2em] py-2 sm:px-6 px-2 z-100 font-bold flex flex-row justify-between"
+    >
+      <span class="underline">Algorithm Solver 3.24.25</span>
+      <div class="flex flex-row items-center gap-5 no-underline pe-4">
+        <i class="fa-solid fa-minus no-underline"></i
+        ><i class="fa-regular fa-square no-underline"></i>
+
+        <i class="fa-solid fa-xmark" style="color: red; font-size: 1.4em"></i>
+      </div>
+    </div>
+    <div class="w-full lg:flex flex-row gap-[2.5rem] mt-[3rem]">
       <!-- Left big box -->
       <div
-        class="lg:max-w-[500px] md:border-8 border-4 border-black rounded-3xl p-6 py-[2rem] relative mb-[4em] lg:sticky top-[2em]"
+        class="lg:max-w-[500px] md:border-8 border-4 border-black rounded-3xl mt-[2em] p-6 py-[2rem] relative mb-[4em]"
         style="max-height: fit-content"
       >
         <!-- Choose an algorithm label -->
         <div class="flex flex-row gap-3">
           <div
-            class="inline-block bg-pink-400 text-black text-[12px] grow px-1 py-2 rounded-md font-bold mb-3 select-none"
+            class="inline-block bg-pink-400 text-black text-[12px] grow px-1 py-2 rounded-md font-bold mb-3 select-none max-width-[35.75rem]"
           >
             CHOOSE AN ALGORITHM:
           </div>
           <div
-            class="selected hide bg-green-400 text-black text-[12px] px-1 py-2 rounded-md font-bold mb-3 select-none" id="selectLbl"
-          >
-            FCFS SELECTED!
-          </div>
+            class="selected hide bg-green-400 text-black text-[12px] px-1 py-2 rounded-md font-bold mb-3 select-none"
+            id="selectLbl"
+          ></div>
         </div>
         <!-- Algorithm buttons -->
+
         <ul class="mt-4 grid grid-cols-3 gap-2">
           <li class="flex">
+            <input
+              type="radio"
+              name="algorithm"
+              value=""
+              class="hidden"
+              checked
+              disabled
+            />
+
             <input
               type="radio"
               id="algo-1"
@@ -130,9 +217,8 @@
               >RR</label
             >
           </li>
-
-      
         </ul>
+
         <!-- Input values label -->
         <div
           class="inline-block bg-pink-400 text-black text-[12px] px-2 py-1 rounded-md font-bold mt-8 select-none"
@@ -157,14 +243,14 @@
               <td class="border border-black text-center jobs">P1</td>
               <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-1"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-1"
                   type="number"
                   min="0"
                 />
               </td>
               <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-2"
                   type="number"
                   min="0"
                 />
@@ -174,14 +260,14 @@
               <td class="border border-black text-center jobs">P2</td>
               <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-2"
                   type="number"
                   min="0"
                 />
               </td>
               <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-2"
                   type="number"
                   min="0"
                 />
@@ -191,14 +277,14 @@
               <td class="border border-black text-center jobs">P3</td>
               <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-2"
                   type="number"
                   min="0"
                 />
               </td>
               <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-2"
                   type="number"
                   min="0"
                 />
@@ -247,25 +333,31 @@
           </button>
         </div>
         <!-- Restart button bottom left -->
-         <div class="absolute lg:bottom-[-4em] left-[-4px] bottom-[-4em] pb-3 flex flex-row gap-3 w-full">
-        <button
-          class="bg-green-400 text-black text-[12px] font-bold rounded lg:px-4 lg:py-2 px-2 p-1 flex tracking-tight items-center gap-2 select-none"
-          style="font-family: 'Press Start 2P', cursive"
+        <div
+          class="absolute lg:bottom-[-4em] left-[-4px] bottom-[-4em] pb-3 flex flex-row gap-3 w-full"
         >
-        <i class="fas fa-solid fa-play mr-1"></i>
-          CALCULATE
-        </button>
-        <button
-          class="bg-red-600 text-white text-[12px] font-bold rounded lg:px-4 lg:py-2 px-2 p-1 flex items-center gap-2 select-none"
-          style="font-family: 'Press Start 2P', cursive"
-        >
-          <i class="fas fa-redo-alt mr-1"> </i>
-          RESTART
-        </button>
-      </div>
+          <button
+            class="bg-green-400 text-black text-[12px] font-bold rounded lg:px-4 lg:py-2 px-2 p-1 flex tracking-tight items-center gap-2 select-none"
+            style="font-family: 'Press Start 2P', cursive"
+            id="calculate"
+          >
+            <i class="fas fa-solid fa-play mr-1"></i>
+            CALCULATE
+          </button>
+          <button
+            class="bg-red-600 text-white text-[12px] font-bold rounded lg:px-4 lg:py-2 px-2 p-1 flex items-center gap-2 select-none"
+            style="font-family: 'Press Start 2P', cursive"
+          >
+            <i class="fas fa-redo-alt mr-1"> </i>
+            RESTART
+          </button>
+        </div>
       </div>
       <!-- Right side content -->
-      <div class="space-y-4 w-full flex flex-col sm:gap-[3rem] pt-12 sm:pt-5">
+      <div
+        class="space-y-4 w-full flex flex-col sm:gap-[3rem] pt-[2.2rem] hide"
+        style="max-width: fit-content"
+      >
         <!-- Timeline -->
         <div class="grid xl:grid-cols-2 gap-[4rem]">
           <div class="flex-grow">
@@ -275,23 +367,9 @@
               TIMELINE:
             </div>
             <div
-              class="text-[12px] flex justify-between max-w-[280px] border-b border-black pb-1"
-            >
-              <span> 0 </span>
-              <span> 6 </span>
-              <span> 6 </span>
-              <span> 8 </span>
-              <span> 10 </span>
-            </div>
-            <div
-              class="flex justify-between max-w-[280px] text-[12px] select-none"
-            >
-              <span> P1 </span>
-              <span> P2 </span>
-              <span> P3 </span>
-              <span> P4 </span>
-              <span> P5 </span>
-            </div>
+              class="text-[12px] flex  flex flex-row content-between gap-4 pb-1"
+              id="timeline"
+            ></div>
           </div>
           <!-- Gantt Chart -->
           <div class="flex-grow">
@@ -301,52 +379,12 @@
               >
                 GANTT CHART:
               </div>
-              <div
-                class="flex max-w-[280px] text-[12px] border border-black rounded select-none"
-              >
-                <div
-                  class="border-r border-black px-1 py-[10px] w-[28px] text-center"
-                >
-                  4
-                </div>
-                <div
-                  class="border-r border-black px-1 py-[10px] w-[28px] text-center"
-                >
-                  8
-                </div>
-                <div
-                  class="border-r border-black px-1 py-[10px] w-[28px] text-center"
-                >
-                  3
-                </div>
-                <div
-                  class="border-r border-black px-1 py-[10px] w-[28px] text-center"
-                >
-                  9
-                </div>
-                <div class="px-1 py-[10px] w-[28px] text-center">6</div>
-              </div>
-            </div>
-            <div>
-              <div
-                class="flex max-w-[280px] text-[12px] rounded-t-none border-t-0 select-none"
-              >
-                <div class="flex max-w-[280px] text-[9px] mt-1 select-none">
-                  <div class="w-[56px] text-center">0</div>
-                  <div class="w-[28px] text-center">
-                    P2
-                    <br />
-                    P3
-                  </div>
-                  <div class="w-[28px] text-center">6</div>
-                  <div class="w-[28px] text-center">
-                    P3
-                    <br />
-                    P4
-                    <br />
-                    P5
-                  </div>
-                </div>
+
+              <div id="ganttChart" class="px-3 mt-2 select-none text-[12px]">
+                <div id="head" class="flex flex-row text-[10px]"></div>
+                <div id="gbody" class="flex flex-row"></div>
+                <div id="tail" class="flex flex-row text-[10px]"></div>
+                <div id="queue" class="flex flex-row text-[9px]"></div>
               </div>
             </div>
           </div>
@@ -361,145 +399,106 @@
               TURN AROUND TIME:
             </div>
             <div class="table text-[12px] w-auto p-2">
-              <div class="table-row-group text-[12px]">
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div class="table-cell px-2 py-1 border-l-4 border-black">
-                    12 - 6 = 13
-                  </div>
-                </div>
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div class="table-cell px-2 py-1 border-l-4 border-black">
-                    12 - 6 = 13
-                  </div>
-                </div>
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div class="table-cell px-2 py-1 border-l-4 border-black">
-                    12 - 6 = 13
-                  </div>
-                </div>
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div
-                    class="table-cell px-2 py-1 border-l-4 border-b-4 border-black"
-                  >
-                    12 - 6 = 13
-                  </div>
-                </div>
-              </div>
+              <div class="table-row-group text-[12px]" id="resultTable"></div>
             </div>
-            <div class="flex items-center mt-2 space-x-2 select-none">
+            <div class="flex items-center mt-2 space-x-2 select-none hide">
               <div
                 class="inline-block bg-pink-400 text-black text-[12px] px-2 py-1 rounded-md font-bold"
               >
                 ATT:
               </div>
               <div
-                class="border border-black rounded-md bg-white text-black text-[12px] px-3 py-1 select-text"
-              >
-                13.60ms
-              </div>
+                class="border-2 border-black rounded-md bg-white text-black text-[12px] px-3 py-1 select-text"
+                id="ttave"
+              ></div>
             </div>
           </div>
 
           <!-- Waiting Time -->
-          <div>
+          <div id>
             <div
               class="inline-block bg-pink-400 text-black text-[12px] px-2 py-1 rounded-md font-bold select-none mb-1"
             >
               WAITING TIME:
             </div>
             <div class="table text-[12px] w-auto p-2">
-              <div class="table-row-group text-[12px]">
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div class="table-cell px-2 py-1 border-l-4 border-black">
-                    12 - 6 = 13
-                  </div>
-                </div>
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div class="table-cell px-2 py-1 border-l-4 border-black">
-                    12 - 6 = 13
-                  </div>
-                </div>
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div class="table-cell px-2 py-1 border-l-4 border-black">
-                    12 - 6 = 13
-                  </div>
-                </div>
-                <div class="table-row">
-                  <div class="table-cell px-2 py-1">P1</div>
-                  <div
-                    class="table-cell px-2 py-1 border-l-4 border-b-4 border-black"
-                  >
-                    12 - 6 = 13
-                  </div>
-                </div>
-              </div>
+              <div
+                class="table-row-group text-[12px]"
+                id="resultTableWaitingTime"
+              ></div>
             </div>
-            <div class="flex items-center mt-2 space-x-2 select-none">
+            <div class="flex items-center mt-2 space-x-2 select-none hide">
               <div
                 class="inline-block bg-pink-400 text-black text-[12px] px-2 py-1 rounded-md font-bold"
               >
                 AWT:
               </div>
               <div
-                class="border border-black rounded-md bg-white text-black text-[12px] px-3 py-1 select-text"
-              >
-                7.60ms
-              </div>
+                class="border-2 border-black rounded-md bg-white text-black text-[12px] px-3 py-1 select-text"
+                id="wtave"
+              ></div>
             </div>
           </div>
         </div>
 
         <!-- CPU Utilization -->
         <div
-          class="flex flex-wrap items-center justify-between w-auto select-none text-[12px] mt-5 pt-[4em]"
+          class="flex flex-wrap items-center justify-between w-auto select-none text-[12px] pt-[3em] mb-[2rem]"
         >
           <div
             class="w-full mb-1 bg-pink-400 text-black px-2 w-max py-1 rounded-md font-bold"
           >
             % OF CPU UTILIZATION:
           </div>
-          <div class="w-full text-center flex flex-row">
-            <span class="inline-block border-b border-black pb-1">
-              4 + 8 + 3 + 9 + 6
-            </span>
-            <span class="inline-block border-b border-black pb-1 ml-1 mr-1">
-              /
-            </span>
-            <span class="inline-block border-b border-black pb-1"> 32 </span>
-            <span class="ml-1 mr-1"> = </span>
-            <span class="inline-block border-b border-black pb-1"> 32 </span>
-            <span class="inline-block border-b border-black pb-1 ml-1 mr-1">
-              /
-            </span>
-            <span class="inline-block border-b border-black pb-1"> 32 </span>
-            <span class="ml-1 mr-1"> × 100 = </span>
-            <span
-              class="inline-block border border-black rounded-md bg-white px-3 py-1"
+          <div
+            class="w-full text-center flex sm:flex-row flex-col gap-4 sm:gap-0 items-center"
+            id="cpuResult"
+          >
+            <div
+              class="w-[fit-content] flex flex-col items-center justify-center"
             >
-              100 %
-            </span>
+              <span class="inline-block pb-1" id="process"> </span>
+              <span
+                class="inline-block pt-2 ml-1 mr-1 border-t border-black tracking-tight"
+                id="completion"
+              >
+              </span>
+            </div>
+            <div class="flex flex-row items-center">
+              <span class="ml-2 mr-2 hide"> = </span>
+              <div
+                class="w-[fit-content] flex flex-col items-center justify-center"
+              >
+                <span
+                  class="inline-block border-b border-black pb-1 tracking-tighter"
+                  id="adds"
+                >
+                </span>
+                <span class="inline-block pt-1" id="burstt"> </span>
+              </div>
+              <span class="ml-2 mr-2 hide"> × 100 = </span>
+              <span
+                class="inline-block border-2 border-black rounded-md bg-white px-3 py-1 hide"
+                id="cpuTotal"
+              >
+              </span>
+            </div>
           </div>
         </div>
-
-        <!-- CPU Icon -->
-        <div class="flex justify-end rounded-sm">
-          <img
-            alt="Icon representing a CPU chip with vertical and horizontal lines around it"
-            class="w-[60px] h-[60px] rounded-lg"
-            draggable="false"
-            height="60"
-            src="https://storage.googleapis.com/a1aa/image/9032ecf2-cadd-4bd5-5e02-2e0b66468713.jpg"
-            width="60"
-          />
-        </div>
       </div>
+    </div>
+    <!-- CPU Icon -->
+    <div
+      class="hide absolute bottom-[2rem] right-[2rem] justify-end rounded-sm"
+    >
+      <img
+        alt="Icon representing a CPU chip with vertical and horizontal lines around it"
+        class="w-[60px] h-[60px] rounded-lg"
+        draggable="false"
+        height="60"
+        src="https://storage.googleapis.com/a1aa/image/9032ecf2-cadd-4bd5-5e02-2e0b66468713.jpg"
+        width="60"
+      />
     </div>
     <script type="module" src="script.js"></script>
   </body>

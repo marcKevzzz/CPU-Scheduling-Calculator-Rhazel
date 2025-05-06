@@ -3,9 +3,6 @@ let turnaroundResult = [];
 import { updateTableColumns } from "../script.js";
 
 export function renderGanttChart(options = {}, ganttChart) {
-  console.log("Type of ganttChart:", typeof ganttChart);
-  console.log("Value of ganttChart:", ganttChart);
-
   const {
     showQueue = true,
     algorithm = "FCFS",
@@ -52,12 +49,13 @@ export function renderGanttChart(options = {}, ganttChart) {
   allTimePoints.push(ganttChart[ganttChart.length - 1].end);
   allTimePoints.forEach((time, i) => {
     const timeDiv = document.createElement("div");
-    timeDiv.classList.add("text-start");
-    timeDiv.style.width = "40px";
-    timeDiv.style.minWidth = "40px";
+    timeDiv.classList.add("text-start", "mt-1", "ml-[-1px]");
+    timeDiv.style.width = "42px";
+    timeDiv.style.minWidth = "42px";
     timeDiv.innerHTML = `${time}`;
-    if (i === allTimePoints.length - 1) {
-      timeDiv.classList.add("bg-blue", "text-center", "rounded", "px-2");
+    if (i === ganttChart.length) {
+      timeDiv.className =
+        "border-2 border-black rounded-md bg-white text-black px-2 ml-[-4px] py-1";
       timeDiv.style.height = "fit-content";
       timeDiv.style.width = "fit-content";
     }
@@ -67,34 +65,40 @@ export function renderGanttChart(options = {}, ganttChart) {
   // Body (Gantt process blocks)
   timelineProcess.forEach((label) => {
     const box = document.createElement("div");
-    box.classList.add("border", "p-2", "text-center");
-    box.style.width = "40px";
-    box.style.minWidth = "40px";
+    box.classList.add(
+      "border-2",
+      "border-black",
+      "text-center",
+      "text-black",
+      "py-2"
+    );
+    box.style.width = "42px";
+    box.style.minWidth = "42px";
     box.innerHTML = `${label}`;
     b.appendChild(box);
   });
 
   if (algorithm === "RR" || algorithm === "SRTF" || algorithm === "PP") {
     const headPanel = document.createElement("div");
-    headPanel.classList.add("d-flex", "flex-column");
+    headPanel.classList.add("flex", "flex-col", "ml-[-6px]");
 
     // Headers
     const rbtHeader = document.createElement("div");
-    rbtHeader.classList.add("d-flex", "flex-row");
+    rbtHeader.classList.add("flex", "flex-row");
     const btHeader = document.createElement("div");
-    btHeader.classList.add("d-flex", "flex-row");
+    btHeader.classList.add("flex", "flex-row");
 
     // Header Labels
     const rbtLbl = document.createElement("div");
-    rbtLbl.style.width = "40px";
-    rbtLbl.style.minWidth = "40px";
-    rbtLbl.innerHTML = "<strong>RBt</strong>";
+    rbtLbl.style.width = "42px";
+    rbtLbl.style.minWidth = "42px";
+    rbtLbl.innerHTML = "RBt";
     rbtHeader.appendChild(rbtLbl);
 
     const btLbl = document.createElement("div");
-    btLbl.style.width = "40px";
-    btLbl.style.minWidth = "40px";
-    btLbl.innerHTML = "<strong>Bt</strong>";
+    btLbl.style.width = "42px";
+    btLbl.style.minWidth = "42px";
+    btLbl.innerHTML = "Bt";
     btHeader.appendChild(btLbl);
 
     // Build burst map for each process
@@ -102,19 +106,19 @@ export function renderGanttChart(options = {}, ganttChart) {
     ganttChart.forEach((entry) => {
       if (entry.label !== "i") {
         burstDurationsMap[entry.label] ??= 0;
-        burstDurationsMap[entry.label] += entry.end - entry.start;
+        burstDurationsMap[entry.label] += entry.end - entry.start - entry.rbt;
       }
     });
 
     // Add RBt and Bt per Gantt chart entry
     ganttChart.forEach((entry) => {
       const rbtDiv = document.createElement("div");
-      rbtDiv.style.width = "40px";
-      rbtDiv.style.minWidth = "40px";
+      rbtDiv.style.width = "42px";
+      rbtDiv.style.minWidth = "42px";
 
       const btDiv = document.createElement("div");
-      btDiv.style.width = "40px";
-      btDiv.style.minWidth = "40px";
+      btDiv.style.width = "42px";
+      btDiv.style.minWidth = "42px";
 
       if (entry.label === "i") {
         rbtDiv.textContent = "";
@@ -134,14 +138,14 @@ export function renderGanttChart(options = {}, ganttChart) {
   } else {
     // Head (Burst Times)
     const burstLabel = document.createElement("div");
-    burstLabel.style.width = "40px";
+    burstLabel.style.width = "42px";
     burstLabel.innerHTML = "Bt";
     h.appendChild(burstLabel);
 
     burstDurations.forEach((dur) => {
       const btDiv = document.createElement("div");
-      btDiv.style.width = "40px";
-      btDiv.style.minWidth = "40px";
+      btDiv.style.width = "42px";
+      btDiv.style.minWidth = "42px";
 
       btDiv.innerHTML = `${dur}`;
       h.appendChild(btDiv);
@@ -150,7 +154,7 @@ export function renderGanttChart(options = {}, ganttChart) {
 }
 function renderQueueTimeline(ganttChart, q, algorithm) {
   if (!q) return;
-  q.innerHTML = ""; // Reset container
+  q.innerHTML = ""; // Clear previous timeline
 
   const allLabels = new Set();
   ganttChart.forEach((entry) => {
@@ -162,17 +166,15 @@ function renderQueueTimeline(ganttChart, q, algorithm) {
     );
   });
 
-  // 🟢 Track processes that are already completed
   const completedSet = new Set();
 
   ganttChart.forEach((entry) => {
     const queueDiv = document.createElement("div");
-    queueDiv.classList.add("text-center");
-    queueDiv.style.width = "40px";
-    queueDiv.style.minWidth = "40px";
+    queueDiv.classList.add("gap-2", "tracking-tighter");
+    queueDiv.style.width = "42px";
+    queueDiv.style.minWidth = "42px";
     queueDiv.style.display = "flex";
     queueDiv.style.flexDirection = "column";
-    queueDiv.style.alignItems = "center";
 
     const renderProc = (proc) => {
       const span = document.createElement("span");
@@ -180,35 +182,24 @@ function renderQueueTimeline(ganttChart, q, algorithm) {
       const priority = typeof proc === "object" ? proc.priority : null;
 
       span.textContent = priority ? `${name}(${priority})` : name;
-      console.log(
-        "Checking slash for",
-        name,
-        "vs",
-        entry.label,
-        "RBT:",
-        entry.rbt
-      );
 
-      // ✅ Slash only once — when it finishes
-      if (
-        ["RR", "SRTF", "PP"].includes(algorithm) &&
-        entry.label === name &&
-        (entry.rbt === 0 ||
-          algorithm === "SRTF" ||
-          algorithm === "RR" ||
-          algorithm === "PP") &&
-        !completedSet.has(name)
-      ) {
-        span.classList.add("slashed");
-        completedSet.add(name); // Mark as completed
-        console.log("Slashing", name, "at time", entry.end);
-      } else if (
-        ["FCFS", "SJF", "NPP"].includes(algorithm) &&
-        entry.label === name
-      ) {
-        span.classList.add("slashed");
-        completedSet.add(name); // Mark as completed
-        console.log("Slashing", name, "at time", entry.end);
+      if (["SRTF", "RR", "PP"].includes(algorithm)) {
+        if (algorithm === "SRTF") {
+          span.classList.add("left");
+        }
+        if (
+          entry.label === name &&
+          (entry.rbt === 0 || entry.rbt === null || entry.rbt === undefined) &&
+          !completedSet.has(name)
+        ) {
+          span.classList.add("slashed");
+          completedSet.add(name);
+        }
+      } else if (["FCFS", "SJF", "NPP"].includes(algorithm)) {
+        if (entry.label === name && !completedSet.has(name)) {
+          span.classList.add("slashed");
+          completedSet.add(name);
+        }
       }
 
       queueDiv.appendChild(span);
@@ -222,7 +213,7 @@ function renderQueueTimeline(ganttChart, q, algorithm) {
 }
 
 export function renderResultTableTurnaround(result) {
-  const tbody = document.querySelector("#resultTable tbody");
+  const tbody = document.querySelector("#resultTable");
   tbody.innerHTML = "";
 
   // Sort result by process name (P1, P2...)
@@ -235,31 +226,33 @@ export function renderResultTableTurnaround(result) {
   let ave;
   result.forEach((r) => {
     const row = `
-      <tr>
-        <td>Tt${process++}</td>
-        <td class="d-flex flex-row">${r.completion} <pre>  -  </pre> ${
-      r.arrival
-    } <pre>  =  </pre> ${r.turnaround}</td>
-      </tr>
+      
+      <div class="table-row">
+                  <div class="table-cell px-2 py-1 th">TT${process++}</div>
+                  <div class="table-cell px-2 py-1 border-l-4 border-black flex flex-row">
+                  ${r.completion}   -  ${r.arrival}  =   ${r.turnaround}
+                  </div>
+                </div>
     `;
     ave = (ave || 0) + r.turnaround;
     tbody.insertAdjacentHTML("beforeend", row);
     turnaroundResult.push(r.turnaround); // Store for later use
   });
-  const ttave = `<tr>
-  <td>TTave</td>
-  <td class="d-flex flex-row">${ave} <pre>  /  </pre> ${
-    process - 1
-  } <pre>  =  </pre> <div class="bg-blue px-2 rounded" style="height: fit-content">${(
-    ave /
-    (process - 1)
-  ).toFixed(2)} ms</div></td>
-  </tr>`;
+  const ttave = `
+  <div class="table-row">
+                  <div class="table-cell px-2 py-1 th"></div>
+                  <div class="table-cell px-2 py-1 border-t-4 border-black  flex flex-row">
+                    =  ${ave}   /   ${process - 1}
+                  </div>
+                </div>
+  `;
   tbody.insertAdjacentHTML("beforeend", ttave);
+  document.getElementById("ttave").textContent =
+    (ave / (process - 1)).toFixed(2) + " ms";
 }
 
 export function renderResultTableWaiting(result) {
-  const tbody = document.querySelector("#resultTableWaitingTime tbody");
+  const tbody = document.querySelector("#resultTableWaitingTime");
   tbody.innerHTML = "";
 
   // Sort result by process name (P1, P2...)
@@ -272,27 +265,31 @@ export function renderResultTableWaiting(result) {
   let ave;
   result.forEach((r) => {
     const row = `
-      <tr>
-        <td>Wt${process}</td>
-        <td class="d-flex flex-row">${
-          turnaroundResult[process - 1]
-        } <pre>  -  </pre> ${r.burst} <pre>  =  </pre> ${r.waiting}</td>
-      </tr>
+      
+      <div class="table-row">
+                  <div class="table-cell px-2 py-1 th">WT${process++}</div>
+                  <div class="table-cell px-2 py-1 border-l-4 border-black  flex flex-row">
+                  ${turnaroundResult[process - 1]}   -   ${r.burst}   =   ${
+      r.waiting
+    }
+                  </div>
+                </div>
     `;
-    process++;
     ave = (ave || 0) + r.waiting;
     tbody.insertAdjacentHTML("beforeend", row);
+    turnaroundResult.push(r.waiting); // Store for later use
   });
-  const ttave = `<tr>
-  <td>WTave</td>
-  <td class="d-flex flex-row">${ave} <pre>  /  </pre> ${
-    process - 1
-  } <pre>  =  </pre> <div class="bg-blue px-2 rounded" style="height: fit-content">${(
-    ave /
-    (process - 1)
-  ).toFixed(2)} ms</div> </td>
-  </tr>`;
+  const ttave = `
+  <div class="table-row">
+                  <div class="table-cell px-2 py-1 th"></div>
+                  <div class="table-cell px-2 py-1 border-t-4 border-black flex flex-row">
+                     =  ${ave}   /   ${process - 1}
+                  </div>
+                </div>
+  `;
   tbody.insertAdjacentHTML("beforeend", ttave);
+  document.getElementById("wtave").textContent =
+    ave / (process - 1).toFixed(2) + " ms";
 }
 
 export function generateTimeline(result) {
@@ -319,15 +316,16 @@ export function generateTimeline(result) {
   // Render grouped blocks
   sortedArrivals.forEach((arrival) => {
     const block = document.createElement("div");
-    block.className =
-      "timeline-block d-flex flex-column gap-2 px-2 py-1 text-center";
-    block.style.maxWidth = "60px";
-    block.style.width = "60px";
+    block.className = "timeline-block flex flex-col gap-2 py-1 text-center";
+    block.style.width = "70px";
+    block.style.maxWidth = "250px";
 
     block.innerHTML = `
-        <div class="fw-semibold">${grouped[arrival].join(", ")}</div>
-        <div class="timeline-hrline"><div class="line"></div></div>
-        <div class="text">${arrival}</div>
+        <div class="font-normal ps-1 text-center tracking-tighter">${grouped[
+          arrival
+        ].join(",")}</div>
+        <div><div class="w-1/2 h-[5px] border-r-2 border-black"></div><div class="w-1/2 h-[5px] border-r-2 border-black"></div></div>
+        <div class="text-center">${arrival}</div>
       `;
 
     timeline.appendChild(block);
@@ -335,27 +333,42 @@ export function generateTimeline(result) {
 
   timeline.appendChild(vrline);
 }
-
-export function renderCPUUtilization(totalIdle, totalTime, ganttChart) {
+export function renderCPUUtilization(totalIdle, result, ganttChart) {
+  console.table(ganttChart);
   let timeline = [];
+  let totalBurst = 0;
 
   ganttChart.forEach((p) => {
-    timeline.push(p.end - p.start);
+    const burst = p.end - p.start;
+    timeline.push(burst);
+    totalBurst += burst;
   });
-  const cpuUtil = ((totalTime - totalIdle) / totalTime) * 100;
-  document.getElementById("cpuUtil").textContent = ` =  ${(
-    (totalTime - totalIdle) /
-    totalTime
-  ).toFixed(4)}  × 100 = `;
+
+  let totalBt = 0;
+
+  result.forEach((p) => {
+    totalBt += p.burst;
+  });
+
+  // Get the last end time as the total time
+  const totalTime =
+    ganttChart.length > 0 ? ganttChart[ganttChart.length - 1].end : 0;
+
+  const cpuUtil =
+    totalTime === 0 ? 0 : ((totalTime - totalIdle) / totalTime) * 100;
+
+  // Update HTML content
+  document.getElementById("burstt").textContent = ` ${totalBurst}`;
+  document.getElementById("adds").textContent = ` ${totalBt}`;
   document.getElementById("cpuTotal").textContent = `${cpuUtil.toFixed(2)}%`;
 
-  // Display all timeline times
+  // Display burst times
   const timelineElement = document.getElementById("completion");
   timelineElement.textContent = `${timeline.join(" + ")}`;
 
-  // Display the number of processes
+  // Display number of processes (or total burst, depending on your intention)
   const processCountElement = document.getElementById("process");
-  processCountElement.textContent = `${ganttChart.length}`;
+  processCountElement.textContent = `${totalBt}`;
 }
 
 export function renderTableHeader(tableSelector, algorithm) {
@@ -389,18 +402,18 @@ export function addRow(tableSelector, algorithm = "", isFirstRow = false) {
   const row = document.createElement("tr");
 
   let rowContent = `
-    <td class="border border-black text-center">
+    <td class="border border-black text-center jobs">
                P${processCounter++}
               </td>
     <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ps-1 ring-0 input py-2"
                   type="number" min="0"
                 />
               </td>
    <td class="border border-black text-center">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ps-1 ring-0 input py-2"
                   type="number" min="0"
                 />
               </td>
@@ -413,8 +426,8 @@ export function addRow(tableSelector, algorithm = "", isFirstRow = false) {
      
        <td class="border border-black text-center" class="timeQuantum-col">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
-                  type="number"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ps-1 ring-0 input py-2"
+                  type="number" id="timeQuantum"
                   min="0"
                 />
               </td>
@@ -426,7 +439,7 @@ export function addRow(tableSelector, algorithm = "", isFirstRow = false) {
     rowContent += `
        <td class="border border-black text-center" class="priority-col">
                 <input
-                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 input py-2"
+                  class="input border-0 outline-0 w-full bg-transparent drop-shadow-none ring-0 ps-1 input py-2"
                   type="number"
                   min="0"
                 />
@@ -500,5 +513,7 @@ export function getProcessData(tableSelector, mode = "priority") {
     }
   });
 
+  console.table(processes);
+  console.table(timeQuantum);
   return { processes, timeQuantum }; // Always return both
 }
