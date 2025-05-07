@@ -8,6 +8,7 @@ import {
   addRow,
   deleteRow,
   onAlgorithmChange,
+  resetUI,
 } from "./algorithms/render.js";
 
 import { calculateFCFS } from "./algorithms/fcfs.js";
@@ -18,7 +19,6 @@ import { calculateSRTF } from "./algorithms/srtf.js";
 import { calculatePP } from "./algorithms/pp.js";
 
 function scheduleAndRender(algorithm, options = {}, mode) {
-  resetUI();
   const { processes, timeQuantum } = getProcessData("#processTable", mode);
   if (!processes || !processes.length) return;
 
@@ -39,9 +39,6 @@ function scheduleAndRender(algorithm, options = {}, mode) {
     console.error("Error during scheduling or rendering:", error);
   }
 }
-
-let algorithmValue = "";
-const radioButtons = document.querySelectorAll("input[type='radio']");
 
 export function updateTableColumns(selectedValue) {
   const table = document.getElementById("processTable");
@@ -99,7 +96,8 @@ export function updateTableColumns(selectedValue) {
     headerRow.appendChild(tqHeader);
   }
 }
-
+let algorithmValue = "";
+const radioButtons = document.querySelectorAll("input[type='radio']");
 radioButtons.forEach((radio) => {
   radio.addEventListener("change", () => {
     updateTableColumns(radio.value);
@@ -154,14 +152,14 @@ function validateTableInputs(algorithm, options = {}, mode) {
   scheduleAndRender(algorithm, options, mode);
 }
 
-function resetUI() {
-  ["head", "gbody", "tail", "queue", "turnaroundTable", "waitingTable"].forEach(
-    (id) => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = "";
-    }
-  );
-}
+// function resetUIS() {
+//   ["head", "gbody", "tail", "queue", "turnaroundTable", "waitingTable"].forEach(
+//     (id) => {
+//       const el = document.getElementById(id);
+//       if (el) el.innerHTML = "";
+//     }
+//   );
+// }
 
 document.addEventListener("DOMContentLoaded", function () {
   const addRowBtn = document.getElementById("addRow");
@@ -174,15 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const clearBtn = document.getElementById("clear");
   if (clearBtn) {
     clearBtn.addEventListener("click", () => {
-      resetUI();
-
-      // Clear process table rows except header
-      const tableBody = document.querySelector("#processTable tbody");
-      if (tableBody) {
-        tableBody.innerHTML = "";
-      }
-
-      // Reset algorithm value and radio buttons
+      // Reset algorithm value and radio buttons FIRST
       algorithmValue = "";
       document.querySelectorAll("input[type='radio']").forEach((radio) => {
         radio.checked = false;
@@ -195,8 +185,9 @@ document.addEventListener("DOMContentLoaded", function () {
         selectLbl.classList.add("hide");
       }
 
-      // Remove Priority and Time Quantum columns
-      updateTableColumns(""); // force cleanup
+      // THEN reset UI (now that algorithmValue is cleared or defaulted)
+      resetUI(algorithmValue);
+      showToast("Calculation restart!", true);
     });
   }
 
@@ -286,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 let toastTimeout;
 
-function showToast(message, bool = false) {
+export function showToast(message, bool = false) {
   const toastLbl = document.getElementById("toastLbl");
   const toast = document.getElementById("toast-danger");
   if (bool) {

@@ -395,7 +395,34 @@ export function renderTableHeader(tableSelector, algorithm) {
   headerHTML += `</tr>`;
   thead.innerHTML = headerHTML;
 }
+
 let processCounter = 4;
+
+export function resetUI(algorithm) {
+  ["head", "gbody", "tail", "queue", "turnaroundTable", "waitingTable"].forEach(
+    (id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = "";
+    }
+  );
+
+  const tableBody = document.querySelector("#processTable tbody");
+  if (tableBody) tableBody.innerHTML = "";
+
+  processCounter = 1;
+
+  const algorithmSelector = document.getElementById("right-side");
+  if (algorithmSelector) {
+    algorithmSelector.classList.add("hide");
+  }
+
+  // Add back 3 rows
+  for (let i = 0; i < 3; i++) {
+    addRow("#processTable", algorithm, i === 0);
+  }
+
+  updateTableColumns(algorithm);
+}
 
 export function addRow(tableSelector, algorithm = "", isFirstRow = false) {
   const tableBody = document.querySelector(`${tableSelector} tbody`);
