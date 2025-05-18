@@ -228,7 +228,7 @@ export function renderResultTableTurnaround(result) {
     const row = `
       
       <div class="table-row">
-                  <div class="table-cell px-2 py-1 th">TT${process++}wa</div>
+                  <div class="table-cell px-2 py-1 th">TT${process++}</div>
                   <div class="table-cell px-2 py-1 border-l-4 border-black flex flex-row">
                   ${r.completion}   -  ${r.arrival}  =   ${r.turnaround}
                   </div>
